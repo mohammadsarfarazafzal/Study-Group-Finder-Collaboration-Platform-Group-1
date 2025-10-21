@@ -1,6 +1,7 @@
 package com.studygroup.backend.service;
 
 import com.studygroup.backend.entity.Course;
+import com.studygroup.backend.entity.Group;
 import com.studygroup.backend.entity.User;
 import com.studygroup.backend.entity.UserCourse;
 import com.studygroup.backend.repository.CourseRepository;
@@ -28,6 +29,7 @@ public class CourseService {
 
     @Autowired
     private UserRepository userRepository;
+
 
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
@@ -156,5 +158,20 @@ public class CourseService {
     public Course getCourseById(Long courseId) {
         return courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Course not found"));
+    }
+
+    public boolean isUserEnrolledInCourse(Long userId, Long courseId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        return userCourseRepository.existsByUserAndCourse(user, course);
+    }
+
+    public List<Course> getEnrolledCourses(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userCourseRepository.findCoursesByUser(user);
     }
 }
